@@ -88,7 +88,7 @@ Returns:
 
 A Pandas dataframe containing the league standings for a year.
 
-### `get_team_v_team(year)`
+#### `get_team_v_team(year)`
 Parameters:
   - `year`: The year to get the team vs. team records (e.g. '2018')
   
