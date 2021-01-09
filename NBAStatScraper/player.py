@@ -36,18 +36,23 @@ def get_season_projection(name):
 		return "Error getting season projection for {}.".format(name)
 	return player_projection
 
-def get_career_player_stats(name, per):
+def get_career_player_stats(extension, per):
 # per can be game, total, 36min, 100pos, shooting, playoffTotal, playoffGame, 
 # playoff36min, playoff100pos, playoffShooting, careerHighs, playoffCareerHighs, college,
 # salary, contract
 	per_dict = {'game': 'all_per_game', 'total': 'all_totals', '36min': 'all_per_minute', 
 		'100pos': 'all_per_poss', 'shooting': 'all_shooting', 'playoffTotal': 'all_playoffs_totals', 
-		'playoff_game': 'playoffs_per_game', 'playoff36min': 'all_playoffs_per_minute', 
+		'playoffGame': 'playoffs_per_game', 'playoff36min': 'all_playoffs_per_minute', 
 		'playoff100pos': 'all_playoffs_per_poss', 'playoffShooting': 'all_playoffs_shooting',
 		'careerHighs' : 'all_year-and-career-highs', 'playoffCareerHighs':'all_year-and-career-highs-po',
 		'college': 'all_all_college_stats', 'salary': 'all_all_salary', 'contract': 'all_contract'}
-	normalized_name = get_player_url(name)
-	player_stats = requests.get('https://www.basketball-reference.com/players/b/{}.html'.format(normalized_name))
+	
+	# This code is for getting the URL extension for players. Since I have them I need to think of what to do with this
+	# normalized_name = get_player_url(name)
+	
+	player_stats = requests.get('https://www.basketball-reference.com/players/b/{}.html'.format(extension))
+
+
 	if player_stats.status_code == 200:
 		soup = BeautifulSoup(player_stats.content, 'lxml')
 		if per == 'game':
@@ -57,9 +62,10 @@ def get_career_player_stats(name, per):
 		player_stats = pd.read_html(str(player_stats))[0]
 		player_stats = player_stats.fillna(0)
 	else:
-		return "Error getting {} stats for {}.".format(per, name)
+		return "Error getting {} stats for {}.".format(per, extension)
 	return player_stats
 
-pd.set_option('display.max_columns', None)
-print(get_career_player_stats('Bol Bol', 'game'))
+def get_player_headshot(extension):
+	return "https://d2cwpp38twqe55.cloudfront.net/req/202006192/images/players/{}.jpg".format(extension)
+
 
