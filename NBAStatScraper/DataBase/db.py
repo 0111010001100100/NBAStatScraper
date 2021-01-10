@@ -3,6 +3,11 @@ from sqlite3 import Error
 import pandas as pd
 import unicodedata, unidecode
 import string
+import sys
+import uuid
+
+sys.path.append('../')
+import player
 
 def connect():
     try:
@@ -45,9 +50,28 @@ def create_player_stats_table(conn):
             FOREIGN KEY (playerid) REFERENCES players(id))""".format(i)
             cursor.execute(query)
 
+def get_player_ids(conn):
+    cursor = conn.cursor()
+    query = "SELECT id FROM players"
+    cursor.execute(query)
+    return cursor.fetchall()
+
+def populate_player_stats_tables(conn, extension):
+    cursor = conn.cursor()
+    measurement = ['game', 'total', 'min', 'pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoffMin', 'playoffPos', 
+                'playoffShooting','careerHighs', 'playoffCareerHighs','college', 'salary', 'contract']
+    for i in measurement:
+        df = player.get_career_player_stats(extension, i)
+        df.to_sql(i, conn, if_exists='append', index=False)
+
+
 conn = connect()
 conn.set_trace_callback(print)
 # create_player_table(conn)
 # populate_player_table(conn)
-create_player_stats_table(conn)
+# create_player_stats_table(conn)
+rows = get_player_ids(conn)
+for row in rows:
+#     print(row[0])
+    print(populate_player_stats_tables(conn, row[0]))
 conn.close()
