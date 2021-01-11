@@ -35,20 +35,35 @@ def populate_player_table(conn):
         df['college'] = df['college'].fillna('BallSoHardU')
         df.to_sql("players", conn, if_exists='append', index=False)
 
+def create_game_table(conn):
+    cursor = conn.cursor()
+    query = """CREATE TABLE IF NOT EXISTS "players.game"(id integer PRIMARY KEY, season text, age integer, tm text, lg text,
+        pos text, g integer, gs integer, mp float, fg float, fga float, fgperc float, threes float, threesa float, 
+        threesperc float, twos float, twosa float, twosperc float, efg float, ft float, fta float, ftperc float, orb float,
+        drb float, trb float, ast float, stl float, blk float, tov float, pf float, pts float , playerid text,
+        FOREIGN KEY (playerid) REFERENCES players(id))"""
+    cursor.execute(query)
+    conn.commit()
+
+def populate_game_table(conn, extension):
+    df = player.get_career_player_stats(extension, 'game')
+    df['playerid'] = extension
+    df.to_sql('players.game', conn, if_exists='append', index=False)
+
 def create_player_stats_table(conn):
     cursor = conn.cursor()
-    measurement = ['game', 'total', 'min', 'pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoffMin', 'playoffPos', 
-                'playoffShooting','careerHighs', 'playoffCareerHighs','college', 'salary', 'contract']
+    measurement = ['game', 'playoffGame']
     for i in measurement:
         try:
             cursor.execute("DROP TABLE {}".format(i))
         finally:
-            query = """CREATE TABLE {}(id integer PRIMARY KEY, Season text, Age integer, Tm text, Lg text
-            Pos text, G integer, GS integer, MP float, FG float, FGA float, FGPerc float, Threes float, ThreesA float, 
-            ThreesPerc float, Twos float, TwosA float, TwosPerc float, eFG float, FT float, FTA float, FTPerc float, ORB float,
-            DRB float, TRB float, AST float, STL float, BLK float, TOV float, PF float, PTS float, playerid text,
+            query = """CREATE TABLE "players.{}"(id integer PRIMARY KEY, season text, age integer, tm text, lg text,
+            pos text, g integer, gs integer, mp float, fg float, fga float, fgperc float, threes float, threesa float, 
+            threesperc float, twos float, twosa float, twosperc float, efg float, ft float, fta float, ftperc float, orb float,
+            drb float, trb float, ast float, stl float, blk float, tov float, pf float, pts float , playerid text,
             FOREIGN KEY (playerid) REFERENCES players(id))""".format(i)
             cursor.execute(query)
+            conn.commit()
 
 def get_player_ids(conn):
     cursor = conn.cursor()
@@ -58,20 +73,24 @@ def get_player_ids(conn):
 
 def populate_player_stats_tables(conn, extension):
     cursor = conn.cursor()
-    measurement = ['game', 'total', 'min', 'pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoffMin', 'playoffPos', 
-                'playoffShooting','careerHighs', 'playoffCareerHighs','college', 'salary', 'contract']
+    measurement = ['game', 'playoffGame']
     for i in measurement:
         df = player.get_career_player_stats(extension, i)
-        df.to_sql(i, conn, if_exists='append', index=False)
+        df['playerid'] = extension
+        df.to_sql("players.{}".format(i), conn, if_exists='append', index=False)
+
+
 
 
 conn = connect()
-conn.set_trace_callback(print)
+# conn.set_trace_callback(print)
 # create_player_table(conn)
 # populate_player_table(conn)
 # create_player_stats_table(conn)
 rows = get_player_ids(conn)
-for row in rows:
+pd.options.display.width = 0
+# for row in rows:
 #     print(row[0])
-    print(populate_player_stats_tables(conn, row[0]))
+    # print(populate_player_stats_tables(conn, row[0]))
+print(player.get_career_player_stats('abdulma01', 'playoffGame'))
 conn.close()

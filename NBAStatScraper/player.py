@@ -42,7 +42,7 @@ def get_career_player_stats(extension, per):
 # salary, contract
 	per_dict = {'game': 'all_per_game', 'total': 'all_totals', 'min': 'all_per_minute', 
 		'pos': 'all_per_poss', 'shooting': 'all_shooting', 'playoffTotal': 'all_playoffs_totals', 
-		'playoffGame': 'playoffs_per_game', 'playoff36min': 'all_playoffs_per_minute', 
+		'playoffGame': 'all_playoffs_per_game', 'playoff36min': 'all_playoffs_per_minute', 
 		'playoffpos': 'all_playoffs_per_poss', 'playoffShooting': 'all_playoffs_shooting',
 		'careerHighs' : 'all_year-and-career-highs', 'playoffCareerHighs':'all_year-and-career-highs-po',
 		'college': 'all_all_college_stats', 'salary': 'all_all_salary', 'contract': 'all_contract'}
@@ -62,6 +62,9 @@ def get_career_player_stats(extension, per):
 		player_stats = pd.read_html(str(player_stats))[0]
 		player_stats = player_stats.fillna(0)
 		player_stats = player_stats.drop(player_stats[player_stats['Season'] == 0].index)
+		player_stats.columns = ['season', 'age', 'tm', 'lg', 'pos', 'g', 'gs', 'mp', 'fg', 'fga', 'fgperc', 'threes',
+								'threesa', 'threesperc', 'twos', 'twosa', 'twosperc', 'efg', 'ft', 'fta', 'ftperc', 'orb',
+								'drb', 'trb', 'ast', 'stl', 'blk', 'tov', 'pf', 'pts']
 	else:
 		return "Error getting {} stats for {}.".format(per, extension)
 	return player_stats
