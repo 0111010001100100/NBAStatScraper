@@ -2,8 +2,6 @@
 -----------------------------------------------------------------------------------------------------------------------------
 A web scraper for NBA statistics on games, players, standings, and teams. This project uses information available on [Basketball Reference](https://basketball-reference.com). I wrote this module to learn BeautifulSoup, and use it for analytics to annoy friends with stats nobody asked for. 
 
-This application creates a database.
-
 ## Usage
 This section describes the methods supported by this project. 
 
