@@ -4,6 +4,14 @@ import requests
 
 
 def get_roster(team, year):
+    '''
+    Scrape the roster of a team from a given year.
+        Parameters:
+            team (string): The 3 letter abbreviation of a team (e.g. 'BOS')
+            year (string): The roster year (e.g. '2005')
+        Returns:
+            A Pandas dataframe containing the roster.
+    '''
     response = requests.get('https://www.basketball-reference.com/teams/{}/{}.html'.format(team, year))
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'lxml')
@@ -21,10 +29,20 @@ def get_roster(team, year):
         return "Error getting roster for {} in year {}".format(team, year)
     return roster
 
-###### These are the team player stats, need to change
 def get_team_stats(team, year, per):
-    # per can be game, total, 36min, 100pos, shooting, playoffTotal, playoffGame, 
-    # playoff36min, playoff100pos, playoffShooting
+    '''
+    Scrape the team stats for each player for a given year.
+        Parameters:
+            team (string): The 3 letter abbreviation of a team (e.g. 'TOR')
+            year (string): The year to get the team stats for (e.g. '2009')
+            per (string): The method in which the statistics are calculated. Can be any one of:
+                ['game', 'total', 'min', 'pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoffMin', 
+                'playoffPos', 'playoffShooting', 'careerHighs', 'playoffCareerHighs', 'college', 'salary', 'contract']
+        Returns:
+            A Pandas dataframe containing the team stats.
+    note::
+        I think this may be redundant because players does the same thing just not aggregated by team. 
+    '''
     per_dict = {'game': 'per_game', 'total': 'all_totals', 'min': 'all_per_minute', 
                 'pos': 'all_per_poss', 'shooting': 'all_shooting', 'playoffTotal': 'all_playoffs_totals', 
                 'playoff_game': 'playoffs_per_game', 'playoffMin': 'all_playoffs_per_minute', 
@@ -44,6 +62,13 @@ def get_team_stats(team, year, per):
     return player_stats
 
 def get_team_stats_per_game(team):
+    '''
+    Scrape the per game team stats for each year.
+        Parameters:
+            team (string): The 3 letter abbreviation of a team (e.g. 'TOR')
+        Returns:
+            A Pandas dataframe containing the per game team stats.
+    '''
     response = requests.get('https://d2cwpp38twqe55.cloudfront.net/teams/{}/stats_basic_totals.html'.format(team))
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'lxml')

@@ -3,13 +3,15 @@ from bs4 import BeautifulSoup, Comment
 import requests
 import unicodedata, unidecode
 
-def _get_player_url(name):
-	first, last = name.lower().split()
-	if len(last) > 5:
-		last = last[:5]
-	return last + first[:2]
 
 def get_player_url(name):
+	'''
+	Builds and returns the URL extension for a given player.
+		Parameters: 
+			name (string): The name of an NBA player (e.g. 'James Harden')
+		Returns:
+			The URL extension for the player (e.g. 'hardeja01')
+	'''
 	name = unidecode.unidecode(unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode("utf-8"))
 	suffix = _get_player_url(name) + '01'
 	player = requests.get('https://www.basketball-reference.com/players/b/{}.html'.format(suffix))
@@ -24,7 +26,27 @@ def get_player_url(name):
 			player = requests.get('https://www.basketball-reference.com/players/b/{}.html'.format(suffix))
 	return "Error player {} not found.".format(name)
 
+def _get_player_url(name):
+	'''
+	Helper function for building the URL extension for a given player.
+		Parameters:
+			name (string): The name of an NBA player (e.g. 'James Harden')
+		Returns: 
+			The base of the URL extension (e.g. 'hardeja')
+	'''
+	first, last = name.lower().split()
+	if len(last) > 5:
+		last = last[:5]
+	return last + first[:2]
+
 def get_season_projection(name):
+	'''
+	Scrape the current season stat projections for a player.
+		Parameters:
+			name (string): The first and last name of a player (e.g. 'Joel Embiid')
+		Returns:
+			A Pandas dataframe containing the player's stat projections for the current season.
+	'''
 	normalized_name = get_player_url(name)
 	player_projection = requests.get('https://www.basketball-reference.com/players/b/{}.html'.format(normalized_name))
 	if player_projection.status_code == 200:
@@ -37,21 +59,28 @@ def get_season_projection(name):
 	return player_projection
 
 def get_career_player_stats(extension, per):
-# per can be game, total, 36min, 100pos, shooting, playoffTotal, playoffGame, 
-# playoff36min, playoff100pos, playoffShooting, careerHighs, playoffCareerHighs, college,
-# salary, contract
+	'''
+	Scrape the career stats for a given player.
+		Parameters:
+			extension (string): The URL extension of a given player (e.g. 'hardenja01')
+			per (string): The method in which the statistics are calculated. Can be any one of:
+				['game', 'total', 'min', 'pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoffMin', 
+				'playoffPos', 'playoffShooting', 'careerHighs', 'playoffCareerHighs', 'college', 'salary', 'contract']
+		Return:
+			A Pandas dataframe containing the player stats.
+	'''
 	per_dict = {'game': 'all_per_game', 'total': 'all_totals', 'min': 'all_per_minute', 
 		'pos': 'all_per_poss', 'shooting': 'all_shooting', 'playoffTotal': 'all_playoffs_totals', 
-		'playoffGame': 'all_playoffs_per_game', 'playoff36min': 'all_playoffs_per_minute', 
+		'playoffGame': 'all_playoffs_per_game', 'playoffMin': 'all_playoffs_per_minute', 
 		'playoffpos': 'all_playoffs_per_poss', 'playoffShooting': 'all_playoffs_shooting',
 		'careerHighs' : 'all_year-and-career-highs', 'playoffCareerHighs':'all_year-and-career-highs-po',
 		'college': 'all_all_college_stats', 'salary': 'all_all_salary', 'contract': 'all_contract'}
 	
+	#TODO: add name as optional parameter so this can be used optionally
 	# This code is for getting the URL extension for players. Since I have them I need to think of what to do with this
 	# normalized_name = get_player_url(name)
 	
 	player_stats = requests.get('https://www.basketball-reference.com/players/{}/{}.html'.format(extension[0],extension))
-
 
 	if player_stats.status_code == 200:
 		soup = BeautifulSoup(player_stats.content, 'lxml')
@@ -62,14 +91,18 @@ def get_career_player_stats(extension, per):
 		player_stats = pd.read_html(str(player_stats))[0]
 		player_stats = player_stats.fillna(0)
 		player_stats = player_stats.drop(player_stats[player_stats['Season'] == 0].index)
-		player_stats.columns = ['season', 'age', 'tm', 'lg', 'pos', 'g', 'gs', 'mp', 'fg', 'fga', 'fgperc', 'threes',
-								'threesa', 'threesperc', 'twos', 'twosa', 'twosperc', 'efg', 'ft', 'fta', 'ftperc', 'orb',
-								'drb', 'trb', 'ast', 'stl', 'blk', 'tov', 'pf', 'pts']
 	else:
 		return "Error getting {} stats for {}.".format(per, extension)
 	return player_stats
 
 def get_player_headshot(extension):
+	'''
+	Get the link to the headshot of a given player.
+		Parameters:
+			extension (string): The URL extension of a given player (e.g. 'hardenja01')
+		Returns:
+			The link to a player's headshot.
+	'''
 	return "https://d2cwpp38twqe55.cloudfront.net/req/202006192/images/players/{}.jpg".format(extension)
 
 
