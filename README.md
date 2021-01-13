@@ -1,6 +1,10 @@
 # NBA Stat Scraper 
 -----------------------------------------------------------------------------------------------------------------------------
-A web scraper for NBA statistics on games, players, standings, and teams. This project uses information available on [Basketball Reference](https://basketball-reference.com). I wrote this module to learn BeautifulSoup, and use it for analytics to annoy friends with stats nobody asked for. 
+This project has two main components: a web scraper and a database for the scraped data.
+
+The web scraper is for NBA statistics on games, players, standings, and teams. This project uses information available on [Basketball Reference](https://basketball-reference.com). I wrote this module to learn BeautifulSoup, and use it for analytics to annoy friends with stats nobody asked for. 
+
+The database uses the stores the scraped data.
 
 
 ## Usage
@@ -20,7 +24,7 @@ Parameters:
   - `name`: The first and last name of a player (e.g. `OG Anunoby`)
   - `per`: The method in which the statistics are calculated. Can be any one of:
   ```
-  ['game', 'total', '36min', '100pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoff36min', 'playoff100pos', 'playoffShooting', 'careerHighs', 'playoffCareerHighs', 'college', 'salary', 'contract']
+  ['game', 'total', 'min', 'pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoffMin', 'playoffPos', 'playoffShooting', 'careerHighs', 'playoffCareerHighs', 'college', 'salary', 'contract']
   ```
   
 Returns:
@@ -43,7 +47,7 @@ Parameters:
   - `year`: The year for the roster to get (e.g. 2020)
   - `per`: The method in which the statistics are calculated. Can be any one of:
 ```
-['game', 'total', '36min', '100pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoff36min', 'playoff100pos', 'playoffShooting']
+['game', 'total', 'min', 'pos', 'shooting', 'playoffTotal', 'playoffGame', 'playoffMin', 'playoffPos', 'playoffShooting']
 ```
 
 Returns:

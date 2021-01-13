@@ -1,7 +1,13 @@
 import pandas as pd
 import sys
+from pathlib import Path
+import sys, os
 
-sys.path.append('../../')
+csvFile = Path(__file__).parent / "../../csv/teams.csv"
+sys.path.append(os.path.join('../../csv'))
+sys.path.append(os.path.join('../../'))
+sys.path.append(os.path.join('../'))
+
 import standings
 
 def prep_standings(year):
@@ -43,5 +49,5 @@ def team_to_id(team):
         Returns:
             The 3 letter abbreviation of the team.
     '''
-    teams = pd.read_csv('../csv/teams.csv')
+    teams = pd.read_csv(csvFile)
     return teams.loc[teams['name'] == team, 'abbrv'].iloc[0]

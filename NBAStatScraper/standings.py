@@ -33,8 +33,10 @@ def get_conference_standings(conference, year):
 			A Pandas dataframe containing the conference standings.
 	note::
 		The conference standings are not available on the website for each year. To get conference standings, 
-		get_division_standings can be used.
+		get_division_standings can be used. Must be for 2016 or later.
 	'''
+	if int(year) < 2016:
+		return "Error: Conference standings are only available for 2016 or later. Please use division standings for earlier years."
 	response = requests.get('https://www.basketball-reference.com/leagues/NBA_{}_standings.html'.format(year))
 	if response.status_code == 200:
 		soup = BeautifulSoup(response.content, 'lxml')
