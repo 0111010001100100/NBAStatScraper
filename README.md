@@ -1,10 +1,12 @@
 # NBA Stat Scraper 
 -----------------------------------------------------------------------------------------------------------------------------
-This project has two main components: a web scraper and a database for the scraped data.
+This project has three main components: a web scraper, a database for the scraped data, and a jupyter-notebook containing code for a Monte Carlo game predictor..
 
 The web scraper is for NBA statistics on games, players, standings, and teams. This project uses information available on [Basketball Reference](https://basketball-reference.com). I wrote this module to learn BeautifulSoup, and use it for analytics to annoy friends with stats nobody asked for. 
 
 The database uses the stores the scraped data. There are currently 5 tables: players, players.perGame, teams, teams.perGame, standings.
+
+The Monte Carlo simulations use points for and against from the current season to predict the outcomes of two teams playing each other. It has functions for simulating single games, multiple games, and playoff series. I am continuing to try different features for predicting game outcomes. 
 
 
 ## Usage
