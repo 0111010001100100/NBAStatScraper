@@ -5,15 +5,20 @@ from requests_html import HTMLSession
 import pyppdf.patch_pyppeteer
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 def render_JS(URL):
-	# options = Options()
-	# options.headless = True
-	driver = webdriver.Chrome()
+	chrome_options = Options()
+	chrome_options.add_argument("--headless")
+	chrome_options.add_argument("--no-sandbox")
+	chrome_options.add_argument("--disable-gpu")
+	driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+	# driver = webdriver.Chrome()
 	driver.get(URL)
 	return driver.page_source
 
-# ## Exploded for some reason
+# # ## Exploded for some reason
 # def render_JS(URL):
 # 	'''
 # 	Render javascript on the page so the table can be parsed.
@@ -26,7 +31,7 @@ def render_JS(URL):
 # 	'''
 # 	session = HTMLSession()
 # 	r = session.get(URL)
-# 	r.html.render()
+# 	r.html.render(timeout=60)
 # 	return r.html.html
 
 def get_date_suffix(date):
@@ -139,5 +144,24 @@ def get_team_shooting(home, team, date):
 	team_shooting = pd.read_html(str(team_shooting))[0]
 	return team_shooting
 
-print(get_team_shooting('DEN', 'PHX', '2021-01-01'))
-# print(render_JS('https://d2cwpp38twqe55.cloudfront.net/boxscores/shot-chart/202101010DEN.html'))
+def get_team_season_results(team, year):
+	response = requests.get('https://d2cwpp38twqe55.cloudfront.net/teams/{}/{}_games.html'.format(team, year))
+	if response.status_code == 200:
+		soup = BeautifulSoup(response.content, 'lxml')
+		season_results = soup.find('table', id='games')
+		season_results = pd.read_html(str(season_results))[0]
+		season_results = season_results[season_results.G != 'G']
+	else:
+		return "Error getting {} results in year {}".format(team, year)
+	return season_results
+
+def get_team_playoff_results(team, year):
+	response = requests.get('https://d2cwpp38twqe55.cloudfront.net/teams/{}/{}_games.html'.format(team, year))
+	if response.status_code == 200:
+		soup = BeautifulSoup(response.content, 'lxml')
+		season_results = soup.find('table', id='games_playoffs')
+		season_results = pd.read_html(str(season_results))[0]
+		season_results = season_results[season_results.G != 'G']
+	else:
+		return "Error getting {} results in year {}".format(team, year)
+	return season_results
