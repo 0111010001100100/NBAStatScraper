@@ -4,11 +4,17 @@ This project has two main components: a web scraper and a database for the scrap
 
 The web scraper is for NBA statistics on games, players, standings, and teams. This project uses information available on [Basketball Reference](https://basketball-reference.com). I wrote this module to learn BeautifulSoup, and use it for analytics to annoy friends with stats nobody asked for. 
 
-The database uses the stores the scraped data.
+The database uses the stores the scraped data. There are currently 5 tables: players, players.perGame, teams, teams.perGame, standings.
 
 
 ## Usage
 This section describes the methods supported by this project. 
+
+### Installation
+Clone the repository:
+`$ git clone https://github.com/NBAStatScraper.git`
+Install the requirements:
+`$ pip install -r requirements.txt`
 
 ### Player
 #### `get_season_projection(name)`
@@ -55,6 +61,7 @@ Returns:
 A Pandas dataframe containing the team stats for a chosen year.
 
 ### Game
+These two are currently broken. I suspect it is an issue with WSL.
 #### `get_shot_chart(home, away, date)`
 Parameters:
   - `home`: The 3 letter abbreviation of the home team (e.g. `'TOR'`, `'BOS'`)
