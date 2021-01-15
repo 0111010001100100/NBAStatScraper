@@ -8,6 +8,46 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
+def get_team_season_results(team, year):
+	'''
+	Get the information for each game of a team in a given year.
+		Parameters:
+			team (string): The 3 letter abbreviation of a team (e.g. 'TOR', 'BOS')
+			year (string): The year of the season to get the game scores for.
+		Returns:
+			A Pandas dataframe containing the information of each game for the team in the given year.	
+	'''
+	response = requests.get('https://d2cwpp38twqe55.cloudfront.net/teams/{}/{}_games.html'.format(team, year))
+	if response.status_code == 200:
+		soup = BeautifulSoup(response.content, 'lxml')
+		season_results = soup.find('table', id='games')
+		season_results = pd.read_html(str(season_results))[0]
+		season_results = season_results[season_results.G != 'G']
+		season_results = season_results.drop(season_results.columns[season_results.columns.str.contains('Unnamed',case = False)],axis = 1)
+	else:
+		return "Error getting {} results in year {}".format(team, year)
+	return season_results
+
+def get_team_playoff_results(team, year):
+	'''
+	Get the information for each playoff game of a team in a given year.
+		Parameters:
+			team (string): The 3 letter abbreviation of a team (e.g. 'TOR', 'BOS')
+			year (string): The year of the season to get the playoff game scores for.
+		Returns:
+			A Pandas dataframe containing the information of each playoff game for the team in the given year.	
+	'''
+	response = requests.get('https://d2cwpp38twqe55.cloudfront.net/teams/{}/{}_games.html'.format(team, year))
+	if response.status_code == 200:
+		soup = BeautifulSoup(response.content, 'lxml')
+		season_results = soup.find('table', id='games_playoffs')
+		season_results = pd.read_html(str(season_results))[0]
+		season_results = season_results[season_results.G != 'G']
+		season_results = season_results.drop(season_results.columns[season_results.columns.str.contains('Unnamed',case = False)],axis = 1)
+	else:
+		return "Error getting {} results in year {}".format(team, year)
+	return season_results
+
 def render_JS(URL):
 	chrome_options = Options()
 	chrome_options.add_argument("--headless")
@@ -143,25 +183,3 @@ def get_team_shooting(home, team, date):
 	team_shooting = soup.find('table', id='shooting-{}'.format(team.upper()))
 	team_shooting = pd.read_html(str(team_shooting))[0]
 	return team_shooting
-
-def get_team_season_results(team, year):
-	response = requests.get('https://d2cwpp38twqe55.cloudfront.net/teams/{}/{}_games.html'.format(team, year))
-	if response.status_code == 200:
-		soup = BeautifulSoup(response.content, 'lxml')
-		season_results = soup.find('table', id='games')
-		season_results = pd.read_html(str(season_results))[0]
-		season_results = season_results[season_results.G != 'G']
-	else:
-		return "Error getting {} results in year {}".format(team, year)
-	return season_results
-
-def get_team_playoff_results(team, year):
-	response = requests.get('https://d2cwpp38twqe55.cloudfront.net/teams/{}/{}_games.html'.format(team, year))
-	if response.status_code == 200:
-		soup = BeautifulSoup(response.content, 'lxml')
-		season_results = soup.find('table', id='games_playoffs')
-		season_results = pd.read_html(str(season_results))[0]
-		season_results = season_results[season_results.G != 'G']
-	else:
-		return "Error getting {} results in year {}".format(team, year)
-	return season_results

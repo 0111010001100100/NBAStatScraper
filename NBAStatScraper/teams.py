@@ -88,4 +88,15 @@ def get_team_stats_per_game(team):
         return "Error getting stats for {}".format(team)
     return team_stats
 
+def get_league_avg_ppg(year):
+    response = requests.get('https://d2cwpp38twqe55.cloudfront.net/leagues/NBA_{}.html'.format(year))
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'lxml')
+        league_ppg = soup.find('div', id='all_team-stats-per_game').find(string=lambda tag: isinstance(tag, Comment))
+        league_ppg = pd.read_html(str(league_ppg))[0]
+    else:
+        return "Error getting league avg points per game for {}.".format(year)
+    return float(league_ppg[league_ppg['Team'] == 'League Average']['PTS'])
+
 # print(get_team_stats('BOS', '2019', 'shooting'))
+print(get_league_avg_ppg('2019'))

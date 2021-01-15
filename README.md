@@ -1,13 +1,10 @@
 # NBA Stat Scraper 
 -----------------------------------------------------------------------------------------------------------------------------
-This project has three main components: a web scraper, a database for the scraped data, and a jupyter-notebook containing code for a Monte Carlo game predictor..
+This project has two main components: a web scraper, and a database for the scraped data.
 
 The web scraper is for NBA statistics on games, players, standings, and teams. This project uses information available on [Basketball Reference](https://basketball-reference.com). I wrote this module to learn BeautifulSoup, and use it for analytics to annoy friends with stats nobody asked for. 
 
 The database uses the stores the scraped data. There are currently 5 tables: players, players.perGame, teams, teams.perGame, standings.
-
-The Monte Carlo simulations use points for and against from the current season to predict the outcomes of two teams playing each other. It has functions for simulating single games, multiple games, and playoff series. I am continuing to try different features for predicting game outcomes. 
-
 
 ## Usage
 This section describes the methods supported by this project. 
@@ -63,7 +60,25 @@ Returns:
 A Pandas dataframe containing the team stats for a chosen year.
 
 ### Game
-These two are currently broken. I suspect it is an issue with WSL.
+#### `get_team_season_results`
+Parameters:
+  - `team`: The 3 letter abbreviation of a team (e.g. `'TOR'`, `'BOS'`)
+  - `year`: The year of the season to get game scores for (e.g. `'2019'`, `'2002'`)
+
+Returns:
+
+A Pandas dataframe containing the information of each game for the team in the given year.
+
+#### `get_team_playoff_results`
+Parameters:
+  - `team`: The 3 letter abbreviation of a team (e.g. `'TOR'`, `'BOS'`)
+  - `year`: The year of the season to get playoff scores for (e.g. `'2019'`, `'2002'`)
+
+Returns:
+
+A Pandas dataframe containing the information of each playoff game for a team in a given year.
+
+These following two are currently broken. I suspect it is an issue with the WSL pyppeteer port.
 #### `get_shot_chart(home, away, date)`
 Parameters:
   - `home`: The 3 letter abbreviation of the home team (e.g. `'TOR'`, `'BOS'`)
